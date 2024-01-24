@@ -11,7 +11,7 @@ import sqlite3
 from libs.verification import *
 from libs.io import *
 from libs.messages import *
-wesfr
+
 #=======================================METHODS=======================================
 def database():
     global conn, cursor
