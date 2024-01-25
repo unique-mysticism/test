@@ -1,19 +1,18 @@
 #=======================================main_form.py=======================================
 #=========================================LIBRARYS=========================================
 # Tk GUI toolkit####################
-from tkinter import *
 import tkinter.messagebox as tkMessageBox
 
 # Database##########################
 import sqlite3
 
-# Local Librarys###########jhgjkuy#########
+# Local Librarys####################
+from libs import *
 from libs.verification import *
 from libs.io import *
 from libs.messages import *
-dhtd
 
-#=======================================METHODS=======================================
+#=======================================FUNCTIONS=======================================
 def database():
     global conn, cursor
     conn = sqlite3.connect("users_info.db")
@@ -34,6 +33,7 @@ def get_input(input):
 
 
 def signup():
+    global entrys1, lbl_result1
     # Check if filds are empty (no problem if phone number is empty)
     if USERNAME.get == "" or PASSWORD.get() == "" or FIRST_NAME.get() == "" or LAST_NAME.get == "" or EMAIL_ADDRESS.get == "":
         lbl_result1.config(text=error_empty_input, fg="red")
@@ -54,8 +54,9 @@ def signup():
                             if name_validate(LAST_NAME.get(),):
                                 if phone_num_validate(PHONE_NUMBER.get(),):
                                     if email_validate(EMAIL_ADDRESS.get(), FIRST_NAME.get(), USERNAME.get(), PASSWORD.get(), PHONE_NUMBER.get()):
+                                        entrys1.remove(CONFIRM_PASSWORD)
                                         # Insert inputs in Database=======================================================================================================================================================================================================================================
-                                        cursor.execute("INSERT INTO `profile` (username, password, first_name, last_name, email_address, phone_num) VALUES(?, ?, ?, ?, ?, ?)", (get_input(USERNAME), get_input(PASSWORD), get_input(FIRST_NAME), get_input(LAST_NAME), get_input(EMAIL_ADDRESS), get_input(PHONE_NUMBER)))
+                                        cursor.execute("INSERT INTO `profile` (username, password, first_name, last_name, email_address, phone_num) VALUES(?, ?, ?, ?, ?, ?)", tuple(map(get_input, entrys1)))
                                         conn.commit()
                                         USERNAME.set("")
                                         PASSWORD.set("")
@@ -148,12 +149,12 @@ def ToggleToResetPassword(event=None):
 
 #=========================================FORMS=========================================
 def signup_form():
-    global CurrentFrame, lbl_result1
+    global CurrentFrame, lbl_result1, entrys1
     CurrentFrame = Frame(form, bg=TEXT_BG)
     CurrentFrame.pack(side=TOP, pady=20)
 
     lbls = ["Username:", "Password:", "Confirm Password:", "First name:", "Last name:", "Email Address:", "Phone Number:", "Already have account?"]
-    entrys = [USERNAME, PASSWORD, CONFIRM_PASSWORD, FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PHONE_NUMBER]
+    entrys1 = [USERNAME, PASSWORD, CONFIRM_PASSWORD, FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PHONE_NUMBER]
     lbl_username            = Label(CurrentFrame, text=lbls[0], font=TEXT_FONT, bd=15, bg=TEXT_BG)
     lbl_password            = Label(CurrentFrame, text=lbls[1], font=TEXT_FONT, bd=15, bg=TEXT_BG)
     lbl_password_confirm    = Label(CurrentFrame, text=lbls[2], font=TEXT_FONT, bd=15, bg=TEXT_BG)
@@ -163,13 +164,13 @@ def signup_form():
     lbl_phone_num           = Label(CurrentFrame, text=lbls[6], font=TEXT_FONT, bd=15, bg=TEXT_BG)
     lbl_login               = Label(CurrentFrame, text=lbls[7], font="Helvetica 15 underline", bg=TEXT_BG)
     lbl_result1             = Label(CurrentFrame, text="", font=TEXT_FONT, bd=15, bg=TEXT_BG)
-    entry_username          = Entry(CurrentFrame, textvariable=entrys[0], font=TEXT_FONT, width=20, bg=ENTRY_BG)
-    entry_password          = Entry(CurrentFrame, textvariable=entrys[1], font=TEXT_FONT, width=20, show="*", bg=ENTRY_BG)
-    entry_password_confirm  = Entry(CurrentFrame, textvariable=entrys[2], font=TEXT_FONT, width=20, show="*", bg=ENTRY_BG)
-    entry_firstname         = Entry(CurrentFrame, textvariable=entrys[3], font=TEXT_FONT, width=20, bg=ENTRY_BG)
-    entry_lastname          = Entry(CurrentFrame, textvariable=entrys[4], font=TEXT_FONT, width=20, bg=ENTRY_BG)
-    entry_email_address     = Entry(CurrentFrame, textvariable=entrys[5], font=TEXT_FONT, width=30, bg=ENTRY_BG)
-    entry_phone_num         = Entry(CurrentFrame, textvariable=entrys[6], font=TEXT_FONT, width=20, bg=ENTRY_BG)
+    entry_username          = Entry(CurrentFrame, textvariable=entrys1[0], font=TEXT_FONT, width=20, bg=ENTRY_BG)
+    entry_password          = Entry(CurrentFrame, textvariable=entrys1[1], font=TEXT_FONT, width=20, show="*", bg=ENTRY_BG)
+    entry_password_confirm  = Entry(CurrentFrame, textvariable=entrys1[2], font=TEXT_FONT, width=20, show="*", bg=ENTRY_BG)
+    entry_firstname         = Entry(CurrentFrame, textvariable=entrys1[3], font=TEXT_FONT, width=20, bg=ENTRY_BG)
+    entry_lastname          = Entry(CurrentFrame, textvariable=entrys1[4], font=TEXT_FONT, width=20, bg=ENTRY_BG)
+    entry_email_address     = Entry(CurrentFrame, textvariable=entrys1[5], font=TEXT_FONT, width=30, bg=ENTRY_BG)
+    entry_phone_num         = Entry(CurrentFrame, textvariable=entrys1[6], font=TEXT_FONT, width=20, bg=ENTRY_BG)
     btn_sginup              = Button(CurrentFrame, text="Register", command=signup, font=TEXT_FONT, width=20, bg=ENTRY_BG, borderwidth=8)
 
     lbl_username.grid(row=1, sticky="E")
@@ -255,40 +256,16 @@ def reset_password_form():
 
 #=========================================MAIN=========================================
 def main():
-     #===============================Create MAIN FORM===================================
-    global form
-    form = Tk()
+    signup_form()
     form.title("(⌐■_■)ノ  Mysticism ")
-    # Form size
     width = 600
     height = 650
-    # The form appears in the middle of the screen
     screen_width = form.winfo_screenwidth()
     screen_height = form.winfo_screenheight()
     x = int((screen_width/2) - (width/2))
-    y = int((screen_height/2) - (height/1.8))
+    y = int((screen_height/2) - (height/1.9))
     form.geometry(f"{width}x{height}+{x}+{y}")
-    # Lock resizing
     form.resizable(0, 0)
-
-
-    #===========================Define INPUT VARIABLES=================================
-    global USERNAME, PASSWORD, CONFIRM_PASSWORD, FIRST_NAME, LAST_NAME, EMAIL_ADDRESS, PHONE_NUMBER, TEXT_FONT, TEXT_BG, ENTRY_BG, bad_input
-    USERNAME = StringVar()
-    PASSWORD = StringVar()
-    CONFIRM_PASSWORD = StringVar()
-    FIRST_NAME = StringVar()
-    LAST_NAME = StringVar()
-    EMAIL_ADDRESS = StringVar()
-    PHONE_NUMBER = StringVar()
-    TEXT_FONT = ("arial", 15)
-    TEXT_BG = "#92C7CF"
-    ENTRY_BG = "#E5E1DA"
-    bad_input = 0
-    # Default form page
-    signup_form()
-
-
     #===============================Create MENUBAR===================================
     mainbar = Menu(form,)
     account = Menu(mainbar, tearoff=0, font=TEXT_FONT)
